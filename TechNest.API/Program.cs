@@ -1,4 +1,5 @@
 
+using TechNest.Infrastructure;
 namespace TechNest.API
 {
     public class Program
@@ -13,6 +14,9 @@ namespace TechNest.API
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            // Register Infrastructure services
+            builder.Services.AddInfrastructureConfiguration(builder.Configuration);
 
             var app = builder.Build();
 
