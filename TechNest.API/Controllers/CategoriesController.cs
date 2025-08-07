@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
 using TechNest.API.Helper;
-using TechNest.Domain.DTOs.CategoriesDto;
-using TechNest.Domain.Entites.Product;
+using Microsoft.AspNetCore.Mvc;
 using TechNest.Domain.Interfaces;
+using TechNest.Domain.Entites.Product;
+using TechNest.Domain.DTOs.CategoriesDto;
 
 namespace TechNest.API.Controllers
 {
@@ -37,7 +37,7 @@ namespace TechNest.API.Controllers
                 var category = await unitOfWork.CategoryRepository.GetByIdAsync(id);
                 if (category == null)
                 {
-                    return NotFound(new ResponseAPI(404));
+                    return NotFound(new ResponseAPI(404, $"Category with id {id} not found"));
                 }
                 return Ok(category);
             }
@@ -78,7 +78,7 @@ namespace TechNest.API.Controllers
                 var category = await unitOfWork.CategoryRepository.GetByIdAsync(id);
                 if (category == null)
                 {
-                    return NotFound(new ResponseAPI(404));
+                    return NotFound(new ResponseAPI(404, $"Category with id {id} not found"));
                 }
                 mapper.Map(categoryDto, category);
                 await unitOfWork.CategoryRepository.UpdateAsync(category);
@@ -97,14 +97,14 @@ namespace TechNest.API.Controllers
                 var category = await unitOfWork.CategoryRepository.GetByIdAsync(id);
                 if (category == null)
                 {
-                    return NotFound(new ResponseAPI(404));
+                    return NotFound(new ResponseAPI(404, $"Category with id {id} not found"));
                 }
 
                 category.IsDeleted = true;
                 category.UpdatedAt = DateTime.Now;
                 await unitOfWork.CategoryRepository.UpdateAsync(category);
 
-                return NoContent();
+                return Ok(new ResponseAPI(200, "Category Deleted successfully"));
             }
             catch (Exception ex)
             {

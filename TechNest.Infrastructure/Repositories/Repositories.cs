@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using TechNest.Domain.Interfaces;
+using TechNest.Domain.Services;
 using TechNest.Infrastructure.Data;
 
 namespace TechNest.Infrastructure.Repositories
@@ -8,22 +9,27 @@ namespace TechNest.Infrastructure.Repositories
     public class Repositories<T> : IRepositories<T> where T : class
     {
         private readonly ApplicationDbContext _context;
+        private readonly IImageManagementService imageManagementService;
         public Repositories(ApplicationDbContext context)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         public async Task<IReadOnlyList<T>> GetAllAsync()=>await _context.Set<T>().AsNoTracking().ToListAsync();
-
-        public async Task<IReadOnlyList<T>> GetAllAsync(params Expression<Func<T, bool>>[] Includes)
+        public async Task<IReadOnlyList<T>> GetAllAsync(
+       Expression<Func<T, bool>> predicate,
+       params Expression<Func<T, object>>[] includes)
         {
-           var query = _context.Set<T>().AsQueryable();
-            foreach (var item in Includes)
+            var query = _context.Set<T>().Where(predicate);
+
+            foreach (var include in includes)
             {
-                query = query.Include(item);
+                query = query.Include(include);
             }
+
             return await query.AsNoTracking().ToListAsync();
         }
+
 
         public Task<T?> GetByIdAsync(int id)
         {
@@ -35,20 +41,26 @@ namespace TechNest.Infrastructure.Repositories
             return entity.AsTask();
         }
 
-        public Task<T?> GetByIdAsync(int id, params Expression<Func<T, bool>>[] Includes)
+    
+
+        public async Task<T?> GetByIdAsync(int id, params Expression<Func<T, object>>[] includes)
         {
-          var query = _context.Set<T>().AsQueryable();
-            foreach (var item in Includes)
+            var query = _context.Set<T>().AsQueryable();
+            foreach (var include in includes)
             {
-                query = query.Include(item);
+                query = query.Include(include);
             }
-            var entity = query.AsNoTracking().FirstOrDefaultAsync(e => EF.Property<int>(e, "Id") == id);
+
+            var entity = await query.AsNoTracking().FirstOrDefaultAsync(e => EF.Property<int>(e, "Id") == id);
+
             if (entity == null)
             {
                 throw new KeyNotFoundException($"Entity with id {id} not found.");
             }
+
             return entity;
         }
+
         public async Task AddAsync(T entity)
         {
            await _context.Set<T>().AddAsync(entity);

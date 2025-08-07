@@ -5,6 +5,7 @@
         ICategoryRepository CategoryRepository { get; }
         IProductRepository ProductRepository { get; }
         IProductImageRepository ProductImageRepository { get; }
+        Task<bool> SaveChangesAsync();
 
     }
 }
