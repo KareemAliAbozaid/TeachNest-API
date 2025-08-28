@@ -6,7 +6,6 @@ namespace TechNest.Domain.Interfaces
     {
         Task<IReadOnlyList<T>> GetAllAsync();
         Task<IReadOnlyList<T>> GetAllAsync(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includes);
-
         Task<T?> GetByIdAsync(int id);
         Task<T?> GetByIdAsync(int id, params Expression<Func<T, object>>[] includes);
         Task AddAsync(T entity);

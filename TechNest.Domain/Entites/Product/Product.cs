@@ -8,11 +8,11 @@ namespace TechNest.Domain.Entites.Product
         public string? Description { get; set; }
         public decimal NewPrice { get; set; }
         public decimal OldPrice { get; set; }
+
         [ForeignKey(nameof(CategoryId))]
         public int CategoryId { get; set; }
         public virtual Category Category { get; set; } = default!;
-       public virtual List<ProductImage> ProductImages { get; set; }
+        public virtual List<ProductImage> ProductImages { get; set; }
 
     }
-
 }

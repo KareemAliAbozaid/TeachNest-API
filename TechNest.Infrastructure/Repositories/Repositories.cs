@@ -9,16 +9,16 @@ namespace TechNest.Infrastructure.Repositories
     public class Repositories<T> : IRepositories<T> where T : class
     {
         private readonly ApplicationDbContext _context;
-        private readonly IImageManagementService imageManagementService;
         public Repositories(ApplicationDbContext context)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        public async Task<IReadOnlyList<T>> GetAllAsync()=>await _context.Set<T>().AsNoTracking().ToListAsync();
-        public async Task<IReadOnlyList<T>> GetAllAsync(
-       Expression<Func<T, bool>> predicate,
-       params Expression<Func<T, object>>[] includes)
+        public async Task<IReadOnlyList<T>> GetAllAsync()
+        {
+            return await _context.Set<T>().AsNoTracking().ToListAsync();
+        }
+        public async Task<IReadOnlyList<T>> GetAllAsync(Expression<Func<T, bool>> predicate,params Expression<Func<T, object>>[] includes)
         {
             var query = _context.Set<T>().Where(predicate);
 
@@ -26,7 +26,6 @@ namespace TechNest.Infrastructure.Repositories
             {
                 query = query.Include(include);
             }
-
             return await query.AsNoTracking().ToListAsync();
         }
 
@@ -40,8 +39,6 @@ namespace TechNest.Infrastructure.Repositories
             }
             return entity.AsTask();
         }
-
-    
 
         public async Task<T?> GetByIdAsync(int id, params Expression<Func<T, object>>[] includes)
         {
@@ -63,7 +60,7 @@ namespace TechNest.Infrastructure.Repositories
 
         public async Task AddAsync(T entity)
         {
-           await _context.Set<T>().AddAsync(entity);
+            await _context.Set<T>().AddAsync(entity);
             await _context.SaveChangesAsync();
         }
         public async Task UpdateAsync(T entity)

@@ -1,8 +1,8 @@
 ﻿namespace TechNest.API.Helper
 {
-    public class ResponseAPI
+    public class ResponseApi
     {
-        public ResponseAPI(int statusCode, string? message = null)
+        public ResponseApi(int statusCode, string? message = null)
         {
             StatusCode = statusCode;
             Message = message ?? GetMessageFromStatusCode(statusCode);

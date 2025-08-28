@@ -10,5 +10,4 @@ namespace TechNest.Domain.Entites.Product
         public int ProductId { get; set; }
 
     }
-
 }

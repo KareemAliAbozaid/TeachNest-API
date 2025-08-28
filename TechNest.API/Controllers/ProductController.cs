@@ -22,14 +22,14 @@ namespace TechNest.API.Controllers
                 var resulte = mapper.Map<List<CreateProductDto>>(products);
                 if (products is null)
                 {
-                    return BadRequest(new ResponseAPI(400, "An error occurred while fetching products."));
+                    return BadRequest(new ResponseApi(400, "An error occurred while fetching products."));
                 }
 
                 return Ok(resulte);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new ResponseAPI(500, "An error occurred while fetching products."));
+                return StatusCode(500, new ResponseApi(500, "An error occurred while fetching products."));
             }
         }
 
@@ -42,13 +42,13 @@ namespace TechNest.API.Controllers
                 var resulte = mapper.Map<GetProductDto>(product);
                 if (product is null)
                 {
-                    return BadRequest(new ResponseAPI(400, "An error occurred while fetching products."));
+                    return BadRequest(new ResponseApi(400, "An error occurred while fetching products."));
                 }
                 return Ok(resulte);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new ResponseAPI(500, "An error occurred while fetching products."));
+                return StatusCode(500, new ResponseApi(500, "An error occurred while fetching products."));
             }
         }
         [HttpPost]
@@ -57,13 +57,13 @@ namespace TechNest.API.Controllers
             try
             {
                 await unitOfWork.ProductRepository.AddAsync(productDto);
-                return Ok(new ResponseAPI(200));
+                return Ok(new ResponseApi(200));
                     
 
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new ResponseAPI(500, "An error occurred while creating the product."));
+                return StatusCode(500, new ResponseApi(500, "An error occurred while creating the product."));
             }
 
         }
@@ -74,15 +74,15 @@ namespace TechNest.API.Controllers
             try
             {
                 await unitOfWork.ProductRepository.UpdateAsync(productDto);
-                return Ok(new ResponseAPI(200));
+                return Ok(new ResponseApi(200));
             }
             catch (KeyNotFoundException knfEx)
             {
-                return NotFound(new ResponseAPI(404, knfEx.Message));
+                return NotFound(new ResponseApi(404, knfEx.Message));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new ResponseAPI(500, "An error occurred while updating the product."));
+                return StatusCode(500, new ResponseApi(500, "An error occurred while updating the product."));
             }
         }
 
@@ -94,21 +94,21 @@ namespace TechNest.API.Controllers
                 var product = await unitOfWork.ProductRepository.GetByIdAsync(id);
                 if (product == null)
                 {
-                    return NotFound(new ResponseAPI(404, "Product not found."));
+                    return NotFound(new ResponseApi(404, "Product not found."));
                 }
 
                 product.IsDeleted = true;
                 await unitOfWork.SaveChangesAsync();
 
-                return Ok(new ResponseAPI(200, "Product deleted successfully."));
+                return Ok(new ResponseApi(200, "Product deleted successfully."));
             }
             catch (KeyNotFoundException knfEx)
             {
-                return NotFound(new ResponseAPI(404, knfEx.Message));
+                return NotFound(new ResponseApi(404, knfEx.Message));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new ResponseAPI(500, "An error occurred while deleting the product."));
+                return StatusCode(500, new ResponseApi(500, "An error occurred while deleting the product."));
             }
         }
 

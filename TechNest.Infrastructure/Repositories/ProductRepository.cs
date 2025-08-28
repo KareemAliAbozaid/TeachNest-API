@@ -12,7 +12,7 @@ namespace TechNest.Infrastructure.Repositories
     {
         private readonly ApplicationDbContext context;
         private readonly IMapper mapper;
-private readonly IImageManagementService imageManagementService;
+        private readonly IImageManagementService imageManagementService;
         public ProductRepository(ApplicationDbContext context, IMapper mapper, IImageManagementService imageManagementService) : base(context)
         {
             this.context = context;
@@ -29,17 +29,17 @@ private readonly IImageManagementService imageManagementService;
             var product =mapper.Map<Product>(productDto);
             await context.Products.AddAsync(product);
             await context.SaveChangesAsync();
-            var imagePath = await imageManagementService.AddImageAsync(productDto.Image, productDto.Name);
 
+            var imagePath = await imageManagementService.AddImageAsync(productDto.Image, productDto.Name);
             var image = imagePath.Select(path => new ProductImage
             {
                 ImageName=path,
                 ProductId=product.Id
             }).ToList();
+
             await context.ProductImages.AddRangeAsync(image);
             await context.SaveChangesAsync();
             return true;
-
         }
 
         public async Task<bool> UpdateAsync(UpdateProductDto productDto)
@@ -54,6 +54,7 @@ private readonly IImageManagementService imageManagementService;
                 throw new KeyNotFoundException($"Product with id {productDto.Id} not found.");
             }
             mapper.Map(productDto, findedProduct);
+
             var findedProductImages = context.ProductImages.Where(m => m.ProductId == productDto.Id).ToList();
             if (findedProductImages != null && findedProductImages.Any())
             {
@@ -69,6 +70,7 @@ private readonly IImageManagementService imageManagementService;
                     ImageName = path,
                     ProductId = productDto.Id
                 }).ToList();
+
                 await context.ProductImages.AddRangeAsync(newImages);
                 await context.SaveChangesAsync();
                 return true;

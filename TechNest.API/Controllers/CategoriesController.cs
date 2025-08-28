@@ -25,7 +25,7 @@ namespace TechNest.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new ResponseAPI(500));
+                return StatusCode(500, new ResponseApi(500));
 
             }
         }
@@ -37,13 +37,13 @@ namespace TechNest.API.Controllers
                 var category = await unitOfWork.CategoryRepository.GetByIdAsync(id);
                 if (category == null)
                 {
-                    return NotFound(new ResponseAPI(404, $"Category with id {id} not found"));
+                    return NotFound(new ResponseApi(404, $"Category with id {id} not found"));
                 }
                 return Ok(category);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new ResponseAPI(500));
+                return StatusCode(500, new ResponseApi(500));
             }
         }
         [HttpPost]
@@ -54,16 +54,16 @@ namespace TechNest.API.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    return BadRequest(new ResponseAPI(400));
+                    return BadRequest(new ResponseApi(400));
                 }
                 var category = mapper.Map<Category>(categoryDto);
                 await unitOfWork.CategoryRepository.AddAsync(category);
-                return CreatedAtAction(nameof(GetById), new { id = category.Id }, new ResponseAPI(200, "Category created successfully"));
+                return CreatedAtAction(nameof(GetById), new { id = category.Id }, new ResponseApi(200, "Category created successfully"));
 
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new ResponseAPI(500));
+                return StatusCode(500, new ResponseApi(500));
             }
         }
         [HttpPut("{id}")]
@@ -73,20 +73,20 @@ namespace TechNest.API.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    return BadRequest(new ResponseAPI(400));
+                    return BadRequest(new ResponseApi(400));
                 }
                 var category = await unitOfWork.CategoryRepository.GetByIdAsync(id);
                 if (category == null)
                 {
-                    return NotFound(new ResponseAPI(404, $"Category with id {id} not found"));
+                    return NotFound(new ResponseApi(404, $"Category with id {id} not found"));
                 }
                 mapper.Map(categoryDto, category);
                 await unitOfWork.CategoryRepository.UpdateAsync(category);
-                return Ok(new ResponseAPI(200, "Category Updated successfully"));
+                return Ok(new ResponseApi(200, "Category Updated successfully"));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new ResponseAPI(500));
+                return StatusCode(500, new ResponseApi(500));
             }
         }
         [HttpDelete("{id}")]
@@ -97,18 +97,18 @@ namespace TechNest.API.Controllers
                 var category = await unitOfWork.CategoryRepository.GetByIdAsync(id);
                 if (category == null)
                 {
-                    return NotFound(new ResponseAPI(404, $"Category with id {id} not found"));
+                    return NotFound(new ResponseApi(404, $"Category with id {id} not found"));
                 }
 
                 category.IsDeleted = true;
                 category.UpdatedAt = DateTime.Now;
                 await unitOfWork.CategoryRepository.UpdateAsync(category);
 
-                return Ok(new ResponseAPI(200, "Category Deleted successfully"));
+                return Ok(new ResponseApi(200, "Category Deleted successfully"));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new ResponseAPI(500));
+                return StatusCode(500, new ResponseApi(500));
             }
         }
     }           
