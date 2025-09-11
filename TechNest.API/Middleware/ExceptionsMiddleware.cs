@@ -22,6 +22,7 @@ namespace TechNest.API.Middleware
         {
             try
             {
+                ApplySecurity(context);
                 if (!IsRequstAllowed(context))
                 {
                     context.Response.StatusCode = (int)HttpStatusCode.TooManyRequests;
@@ -70,6 +71,13 @@ namespace TechNest.API.Middleware
             }
 
             return true;
+        }
+
+        private void ApplySecurity(HttpContext context)
+        {
+            context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+            context.Response.Headers.Add("X-Frame-Options", "DENY");
+            context.Response.Headers.Add("X-XSS-Protection", "1; mode=block");
         }
     }
 }
