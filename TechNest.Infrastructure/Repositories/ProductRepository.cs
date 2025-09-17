@@ -4,6 +4,7 @@ using TechNest.Domain.DTOs.ProductDto;
 using TechNest.Domain.Entites.Product;
 using TechNest.Domain.Interfaces;
 using TechNest.Domain.Services;
+using TechNest.Domain.Sharing;
 using TechNest.Infrastructure.Data;
 
 namespace TechNest.Infrastructure.Repositories
@@ -20,6 +21,31 @@ namespace TechNest.Infrastructure.Repositories
             this.imageManagementService = imageManagementService;
         }
 
+        public async Task<IEnumerable<GetProductDto>> GetAllAsync(ProductParams productParams)
+        {
+            var qury=context.Products.Include(m=>m.Category).Include(m=>m.ProductImages).AsNoTracking();
+            if (productParams.CategoryId.HasValue)
+            {
+                qury = qury.Where(m => m.CategoryId == productParams.CategoryId);
+            }
+
+            if (!string.IsNullOrEmpty(productParams.Sort))
+            {
+                qury = productParams.Sort switch
+                {
+                    "price_asc" => qury.OrderBy(m => m.NewPrice),
+                    "price_desc" => qury.OrderByDescending(m => m.NewPrice),
+                    _ => qury.OrderBy(m => m.Name),
+                };
+            }
+         
+            qury = qury.Skip(((int)productParams.PageNumber - 1) * (int)productParams.pageSize).Take((int)productParams.pageSize);
+
+            var result = mapper.Map<List<GetProductDto>>(qury);
+            return result;
+
+        }
+
         public async Task<bool> AddAsync(CreateProductDto productDto)
         {
             if (productDto == null)
@@ -30,7 +56,7 @@ namespace TechNest.Infrastructure.Repositories
             await context.Products.AddAsync(product);
             await context.SaveChangesAsync();
 
-            var imagePath = await imageManagementService.AddImageAsync(productDto.Image, productDto.Name);
+            var imagePath = await imageManagementService.AddImageAsync(productDto.ProductImages, productDto.Name);
             var image = imagePath.Select(path => new ProductImage
             {
                 ImageName=path,
@@ -64,7 +90,7 @@ namespace TechNest.Infrastructure.Repositories
                 }
                 context.ProductImages.RemoveRange(findedProductImages);
 
-                var imagePath =await imageManagementService.AddImageAsync(productDto.Image, productDto.Name);
+                var imagePath =await imageManagementService.AddImageAsync(productDto.ProductImages, productDto.Name);
                 var newImages = imagePath.Select(path => new ProductImage
                 {
                     ImageName = path,

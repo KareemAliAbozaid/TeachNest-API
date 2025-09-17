@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using TechNest.API.Helper;
 using TechNest.Domain.DTOs.ProductDto;
 using TechNest.Domain.Interfaces;
+using TechNest.Domain.Sharing;
 
 namespace TechNest.API.Controllers
 {
@@ -14,18 +15,21 @@ namespace TechNest.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] ProductParams productParams)
         {
             try
             {
-                var products = await unitOfWork.ProductRepository.GetAllAsync(p => !p.IsDeleted, p => p.Category,p => p.ProductImages);
-                var resulte = mapper.Map<List<CreateProductDto>>(products);
-                if (products is null)
-                {
-                    return BadRequest(new ResponseApi(400, "An error occurred while fetching products."));
-                }
+                var products = await unitOfWork.ProductRepository.GetAllAsync(productParams);
+                var totalRecords = await unitOfWork.ProductRepository.CountAsync();
 
-                return Ok(resulte);
+
+                return Ok(new Pagination<GetProductDto>(
+                    productParams.PageNumber ?? 1, 
+                    productParams.pageSize,
+                    totalRecords,
+                    products
+                ));
+
             }
             catch (Exception ex)
             {
