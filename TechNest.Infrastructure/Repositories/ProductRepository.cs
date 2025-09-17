@@ -24,6 +24,13 @@ namespace TechNest.Infrastructure.Repositories
         public async Task<IEnumerable<GetProductDto>> GetAllAsync(ProductParams productParams)
         {
             var qury=context.Products.Include(m=>m.Category).Include(m=>m.ProductImages).AsNoTracking();
+            //filter by search
+            if (!string.IsNullOrEmpty(productParams.Search))
+            {
+                var searchWord = productParams.Search.Split(' ');
+                qury = qury.Where(m => searchWord.All(word => m.Name.Contains(word.ToLower()) || m.Description.Contains(word.ToLower())));
+            }
+            //filter by categoryId
             if (productParams.CategoryId.HasValue)
             {
                 qury = qury.Where(m => m.CategoryId == productParams.CategoryId);

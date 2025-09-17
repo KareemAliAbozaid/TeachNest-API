@@ -16,6 +16,15 @@ namespace TechNest.API
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            //Add CORS
+            builder.Services.AddCors(opt =>
+            {
+                opt.AddPolicy("CorsPolicy", policy =>
+                {
+                    policy.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("https://localhost:4200");
+                });
+            });
+
             // Register Infrastructure services
             builder.Services.AddInfrastructureConfiguration(builder.Configuration);
 
@@ -27,6 +36,7 @@ namespace TechNest.API
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+            app.UseCors("CorsPolicy");
             app.UseMiddleware<ExceptionsMiddleware>();
 
             app.UseStatusCodePagesWithReExecute("/errors/{0}");
